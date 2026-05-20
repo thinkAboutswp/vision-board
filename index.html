@@ -7,168 +7,53 @@
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: #f5f2ec; min-height: 100vh; padding: 0; }
 
-  body {
-    font-family: 'DM Sans', sans-serif;
-    background: #f5f2ec;
-    min-height: 100vh;
-    padding: 0;
-  }
+  .page-header { text-align: center; padding: 48px 24px 32px; background: #f5f2ec; }
+  .page-header h1 { font-family: 'Cormorant Garamond', serif; font-size: 52px; font-weight: 300; color: #2d3a2e; letter-spacing: -0.5px; line-height: 1; }
+  .page-header h1 em { font-style: italic; color: #4a6741; }
+  .page-header p { margin-top: 10px; font-size: 13px; color: #8a8a7e; letter-spacing: 0.08em; text-transform: uppercase; }
 
-  .page-header {
-    text-align: center;
-    padding: 48px 24px 32px;
-    background: #f5f2ec;
-  }
-  .page-header h1 {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 52px;
-    font-weight: 300;
-    color: #2d3a2e;
-    letter-spacing: -0.5px;
-    line-height: 1;
-  }
-  .page-header h1 em {
-    font-style: italic;
-    color: #4a6741;
-  }
-  .page-header p {
-    margin-top: 10px;
-    font-size: 13px;
-    color: #8a8a7e;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-  }
+  .board { display: grid; grid-template-columns: repeat(12, 1fr); grid-auto-rows: 80px; gap: 6px; padding: 0 24px 24px; max-width: 1100px; margin: 0 auto; }
 
-  .board {
-    display: grid;
-    grid-template-columns: repeat(12, 1fr);
-    grid-auto-rows: 80px;
-    gap: 6px;
-    padding: 0 24px 24px;
-    max-width: 1100px;
-    margin: 0 auto;
-  }
-
-  .cell {
-    position: relative;
-    overflow: hidden;
-    border-radius: 6px;
-    cursor: pointer;
-    background: #e8e4db;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-  }
+  .cell { position: relative; overflow: hidden; border-radius: 6px; cursor: pointer; background: #e8e4db; transition: transform 0.2s ease, box-shadow 0.2s ease; }
   .cell:hover { transform: scale(1.015); box-shadow: 0 8px 32px rgba(0,0,0,0.18); z-index: 10; }
-
-  .cell img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-    transition: transform 0.4s ease;
-  }
+  .cell img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.4s ease; }
   .cell:hover img { transform: scale(1.05); }
 
-  /* Upload overlay — shown when no image */
-  .upload-hint {
-    position: absolute; inset: 0;
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    gap: 6px;
-    background: #e8e4db;
-    color: #aaa89a;
-    font-size: 11px;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-    transition: background 0.2s;
-    pointer-events: none;
-  }
-  .cell:hover .upload-hint { background: #dddad0; }
+  .upload-hint { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; background: #e8e4db; color: #aaa89a; font-size: 11px; letter-spacing: 0.05em; text-transform: uppercase; pointer-events: none; }
   .upload-hint svg { width: 20px; height: 20px; opacity: 0.5; }
   .cell.has-image .upload-hint { display: none; }
 
-  /* Text overlays */
-  .overlay {
-    position: absolute; inset: 0;
-    display: flex; flex-direction: column;
-    align-items: flex-start; justify-content: flex-end;
-    padding: 12px 14px;
-    pointer-events: none;
-  }
-  .overlay.center { align-items: center; justify-content: center; text-align: center; }
-  .overlay-text {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 15px;
-    color: #fff;
-    font-weight: 300;
-    line-height: 1.3;
-    text-shadow: 0 1px 8px rgba(0,0,0,0.35);
-    pointer-events: auto;
-    background: transparent;
-    border: none;
-    width: 100%;
-    resize: none;
-    outline: none;
-    cursor: text;
-  }
-  .overlay-text:focus { background: rgba(0,0,0,0.15); border-radius: 4px; }
+  .remove-btn { position: absolute; top: 6px; right: 6px; width: 22px; height: 22px; background: rgba(0,0,0,0.45); border: none; border-radius: 50%; color: #fff; font-size: 13px; cursor: pointer; display: none; align-items: center; justify-content: center; z-index: 20; }
+  .cell:hover .remove-btn { display: flex; }
+  .cell.text-cell .remove-btn { display: none !important; }
 
-  /* Solid text cells */
-  .cell.text-cell {
-    cursor: default;
-    display: flex; align-items: center; justify-content: center;
-    padding: 16px;
-    text-align: center;
-  }
-  .cell.text-cell .text-edit {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: clamp(13px, 2vw, 22px);
-    font-weight: 300;
-    line-height: 1.4;
-    color: inherit;
-    background: transparent;
-    border: none;
-    outline: none;
-    resize: none;
-    width: 100%;
-    text-align: center;
-    cursor: text;
-  }
+  .cell.text-cell { cursor: default; display: flex; align-items: center; justify-content: center; padding: 16px; text-align: center; }
+  .cell.text-cell .text-edit { font-family: 'Cormorant Garamond', serif; font-size: clamp(13px, 2vw, 22px); font-weight: 300; line-height: 1.4; color: inherit; background: transparent; border: none; outline: none; resize: none; width: 100%; text-align: center; cursor: text; }
   .cell.text-cell.green { background: #4a6741; color: #e8f0e5; }
   .cell.text-cell.cream { background: #f0ebe0; color: #3a3a2e; }
   .cell.text-cell.dark { background: #2d3a2e; color: #c8d4c0; }
   .cell.text-cell.sage { background: #7a9470; color: #f0f4ee; }
   .cell.text-cell.blush { background: #d4c4b0; color: #3a3020; }
 
-  /* Remove button */
-  .remove-btn {
-    position: absolute; top: 6px; right: 6px;
-    width: 22px; height: 22px;
-    background: rgba(0,0,0,0.45);
-    border: none; border-radius: 50%;
-    color: #fff; font-size: 13px;
-    cursor: pointer; display: none;
-    align-items: center; justify-content: center;
-    line-height: 1; z-index: 20;
-  }
-  .cell:hover .remove-btn { display: flex; }
-  .cell.text-cell .remove-btn { display: none !important; }
+  /* URL Modal */
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 100; align-items: center; justify-content: center; }
+  .modal-overlay.active { display: flex; }
+  .modal { background: #f5f2ec; border-radius: 12px; padding: 28px; width: 420px; max-width: 90vw; }
+  .modal h3 { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 300; color: #2d3a2e; margin-bottom: 6px; }
+  .modal p { font-size: 12px; color: #8a8a7e; margin-bottom: 16px; line-height: 1.6; }
+  .modal input { width: 100%; padding: 10px 12px; border: 1px solid #ccc8be; border-radius: 6px; font-size: 13px; background: #fff; outline: none; margin-bottom: 12px; }
+  .modal input:focus { border-color: #4a6741; }
+  .modal-hint { font-size: 11px; color: #aaa89a; margin-bottom: 16px; line-height: 1.7; }
+  .modal-hint a { color: #4a6741; }
+  .modal-btns { display: flex; gap: 8px; justify-content: flex-end; }
+  .btn { padding: 8px 18px; border-radius: 6px; border: none; font-size: 13px; cursor: pointer; }
+  .btn-cancel { background: #e8e4db; color: #3a3a2e; }
+  .btn-ok { background: #4a6741; color: #fff; }
+  .btn:hover { opacity: 0.85; }
 
-  /* Hidden file input */
-  input[type=file] { display: none; }
-
-  /* Bottom bar */
-  .bottom-bar {
-    text-align: center;
-    padding: 24px;
-    font-size: 12px;
-    color: #aaa89a;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-  }
-
-  /* Drag over state */
-  .cell.drag-over { outline: 2px dashed #4a6741; outline-offset: -2px; }
+  .bottom-bar { text-align: center; padding: 24px; font-size: 12px; color: #aaa89a; letter-spacing: 0.06em; text-transform: uppercase; }
 </style>
 </head>
 <body>
@@ -179,8 +64,6 @@
 </div>
 
 <div class="board" id="board">
-  <!-- Row 1 — spans defined by col/row -->
-  <!-- [col-start / col-end / row-start / row-end] in style -->
   <div class="cell" style="grid-column:1/5;grid-row:1/4;" data-slot="1"></div>
   <div class="cell" style="grid-column:5/9;grid-row:1/3;" data-slot="2"></div>
   <div class="cell text-cell green" style="grid-column:9/13;grid-row:1/2;"><textarea class="text-edit" spellcheck="false">clear skin · shiny hair
@@ -190,10 +73,8 @@ fit body · healthy mind</textarea></div>
 my body. my mind. my energy.</textarea></div>
 
   <div class="cell" style="grid-column:1/4;grid-row:4/7;" data-slot="4"></div>
-  <div class="cell text-cell dark" style="grid-column:4/7;grid-row:4/6;">
-    <textarea class="text-edit" spellcheck="false" style="font-size:28px;font-style:italic;">do it for your
-future self</textarea>
-  </div>
+  <div class="cell text-cell dark" style="grid-column:4/7;grid-row:4/6;"><textarea class="text-edit" spellcheck="false" style="font-size:28px;font-style:italic;">do it for your
+future self</textarea></div>
   <div class="cell" style="grid-column:7/10;grid-row:4/7;" data-slot="5"></div>
   <div class="cell text-cell sage" style="grid-column:10/13;grid-row:4/5;"><textarea class="text-edit" spellcheck="false">be happy with what
 you have while working
@@ -221,76 +102,111 @@ BEST version of myself.</textarea></div>
   <div class="cell" style="grid-column:8/10;grid-row:12/14;" data-slot="15"></div>
 </div>
 
-<div class="bottom-bar">click any photo cell to upload · drag & drop supported · text cells are editable</div>
+<div class="bottom-bar">нүд дээр дарж зургийн URL оруулна · текст нүднүүдийг шууд засаж болно</div>
 
-<input type="file" id="file-input" accept="image/*">
+<!-- URL Modal -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <h3>Зургийн URL оруулах</h3>
+    <p>Зургаа интернэтэд байршуулаад URL-ийг доор буулга.</p>
+    <input type="url" id="url-input" placeholder="https://i.imgur.com/..." />
+    <div class="modal-hint">
+      <strong>Imgur ашиглах заавар:</strong><br>
+      1. <a href="https://imgur.com/upload" target="_blank">imgur.com/upload</a> → зургаа оруул<br>
+      2. Зураг дээр right-click → "Copy image address"<br>
+      3. Тэр URL-ийг энд буулга
+    </div>
+    <div class="modal-btns">
+      <button class="btn btn-cancel" id="modal-cancel">Болих</button>
+      <button class="btn btn-ok" id="modal-ok">Оруулах</button>
+    </div>
+  </div>
+</div>
 
 <script>
-const board = document.getElementById('board');
-const fileInput = document.getElementById('file-input');
-let activeCell = null;
+const STORAGE_KEY = 'visionboard_urls';
+
+function loadSaved() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); } catch(e) { return {}; }
+}
+function saveAll(data) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+}
+
+let saved = loadSaved();
+let activeSlot = null;
 
 function makeUploadHint() {
   const h = document.createElement('div');
   h.className = 'upload-hint';
-  h.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 16V8m0 0-3 3m3-3 3 3"/><rect x="3" y="3" width="18" height="18" rx="3"/></svg><span>photo</span>`;
+  h.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 16V8m0 0-3 3m3-3 3 3"/><rect x="3" y="3" width="18" height="18" rx="3"/></svg><span>зураг</span>`;
   return h;
 }
 
-function makeRemoveBtn(cell) {
-  const b = document.createElement('button');
-  b.className = 'remove-btn';
-  b.innerHTML = '×';
-  b.title = 'Remove image';
-  b.addEventListener('click', (e) => {
-    e.stopPropagation();
-    const img = cell.querySelector('img');
-    if (img) { URL.revokeObjectURL(img.src); img.remove(); }
-    cell.classList.remove('has-image');
-    if (!cell.querySelector('.upload-hint')) cell.appendChild(makeUploadHint());
-  });
-  return b;
-}
-
-// Init photo cells
-document.querySelectorAll('.cell[data-slot]').forEach(cell => {
-  cell.appendChild(makeUploadHint());
-  cell.appendChild(makeRemoveBtn(cell));
-
-  cell.addEventListener('click', () => {
-    activeCell = cell;
-    fileInput.value = '';
-    fileInput.click();
-  });
-
-  // Drag & drop
-  cell.addEventListener('dragover', e => { e.preventDefault(); cell.classList.add('drag-over'); });
-  cell.addEventListener('dragleave', () => cell.classList.remove('drag-over'));
-  cell.addEventListener('drop', e => {
-    e.preventDefault();
-    cell.classList.remove('drag-over');
-    const file = e.dataTransfer.files[0];
-    if (file && file.type.startsWith('image/')) setImage(cell, file);
-  });
-});
-
-fileInput.addEventListener('change', () => {
-  if (fileInput.files[0] && activeCell) {
-    setImage(activeCell, fileInput.files[0]);
-  }
-});
-
-function setImage(cell, file) {
+function setImage(cell, url) {
   const existing = cell.querySelector('img');
-  if (existing) { URL.revokeObjectURL(existing.src); existing.remove(); }
+  if (existing) existing.remove();
+  if (!url) { cell.classList.remove('has-image'); return; }
   const img = document.createElement('img');
-  img.src = URL.createObjectURL(file);
+  img.src = url;
   img.alt = '';
+  img.onerror = () => { img.remove(); cell.classList.remove('has-image'); alert('Зургийн URL буруу байна. Дахин шалгана уу.'); };
   cell.insertBefore(img, cell.firstChild);
   cell.classList.add('has-image');
 }
 
-// Auto-resize textareas
+document.querySelectorAll('.cell[data-slot]').forEach(cell => {
+  const slot = cell.dataset.slot;
+
+  cell.appendChild(makeUploadHint());
+
+  const rmBtn = document.createElement('button');
+  rmBtn.className = 'remove-btn';
+  rmBtn.innerHTML = '×';
+  rmBtn.title = 'Зураг устгах';
+  rmBtn.addEventListener('click', e => {
+    e.stopPropagation();
+    setImage(cell, null);
+    delete saved[slot];
+    saveAll(saved);
+  });
+  cell.appendChild(rmBtn);
+
+  if (saved[slot]) setImage(cell, saved[slot]);
+
+  cell.addEventListener('click', () => {
+    activeSlot = slot;
+    document.getElementById('url-input').value = saved[slot] || '';
+    document.getElementById('modal').classList.add('active');
+    setTimeout(() => document.getElementById('url-input').focus(), 100);
+  });
+});
+
+document.getElementById('modal-cancel').addEventListener('click', () => {
+  document.getElementById('modal').classList.remove('active');
+  activeSlot = null;
+});
+
+document.getElementById('modal-ok').addEventListener('click', () => {
+  const url = document.getElementById('url-input').value.trim();
+  if (!url) return;
+  const cell = document.querySelector(`.cell[data-slot="${activeSlot}"]`);
+  setImage(cell, url);
+  saved[activeSlot] = url;
+  saveAll(saved);
+  document.getElementById('modal').classList.remove('active');
+  activeSlot = null;
+});
+
+document.getElementById('url-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') document.getElementById('modal-ok').click();
+  if (e.key === 'Escape') document.getElementById('modal-cancel').click();
+});
+
+document.getElementById('modal').addEventListener('click', e => {
+  if (e.target === document.getElementById('modal')) document.getElementById('modal-cancel').click();
+});
+
 document.querySelectorAll('textarea').forEach(ta => {
   ta.style.height = 'auto';
   ta.addEventListener('input', () => { ta.style.height = 'auto'; ta.style.height = ta.scrollHeight + 'px'; });
